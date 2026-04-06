@@ -438,8 +438,9 @@ setTimeout(() => {
         }));
 
       } catch (err) {
-        alert("AI生成失敗");
-      }
+  console.error("AIエラー:", err); // ←追加
+  alert("AI生成失敗");
+}
     }}
     className="bg-purple-500 text-white px-3 py-1 rounded"
   >
@@ -449,34 +450,42 @@ setTimeout(() => {
   {/* AI説明 */}
   <button
     onClick={async (e) => {
-      e.stopPropagation();
+  e.stopPropagation();
 
-      try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            type: "desc",
-            title: a.title
-          })
-        });
+  console.log("①クリックされた");
 
-        const data = await res.json();
+  try {
+    const res = await fetch("/api/generate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        type: "title",
+        title: a.title,
+        keyword: a.keyword
+      })
+    });
 
-        setSeoState(prev => ({
-          ...prev,
-          [a.id]: {
-            ...prev[a.id],
-            meta: data.text
-          }
-        }));
+    console.log("②res:", res);
+    console.log("status:", res.status);
 
-      } catch (err) {
-        alert("AI生成失敗");
+    const data = await res.json();
+    console.log("③data:", data);
+
+    setSeoState(prev => ({
+      ...prev,
+      [a.id]: {
+        ...(prev[a.id] || {}), // ←ここも修正
+        seoTitle: data.text
       }
-    }}
+    }));
+
+  } catch (err) {
+    console.error("④エラー:", err);
+    alert("AI生成失敗");
+  }
+}}
     className="bg-green-500 text-white px-3 py-1 rounded"
   >
     AI説明
