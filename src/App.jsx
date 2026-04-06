@@ -23,7 +23,7 @@ function App() {
   const [editKeyword, setEditKeyword] = useState("");
   const [loadingMap, setLoadingMap] = useState({});
   const [openId, setOpenId] = useState(null);
-
+  const [toast, setToast] = useState("");
   const [seoState, setSeoState] = useState({});
 
   const provider = new GoogleAuthProvider();
@@ -165,7 +165,15 @@ function App() {
   if (status === "完了") return "bg-green-400";
   return "bg-gray-300";
 };
-  return (
+    return (
+  <>
+    {toast && (
+      <div className="fixed top-5 left-1/2 -translate-x-1/2 
+      bg-black text-white px-4 py-2 rounded shadow-lg z-50">
+        {toast}
+      </div>
+    )}
+
     <div className="flex-1 p-8 bg-gray-100">
       <div className="max-w-5xl mx-auto space-y-6">
 
@@ -534,6 +542,10 @@ ${loadingMap[a.id]
               });
 
               fetchArticles(user);
+              setOpenId(null);
+
+              setToast("保存しました！");
+              setTimeout(() => setToast(""), 2000);
             }}
             className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer
 hover:bg-blue-600 hover:shadow-lg hover:scale-105 
@@ -568,7 +580,8 @@ transition duration-150"
 
       </div>
     </div>
-  );
-}
+    </>
+  )};
+
 
 export default App;
