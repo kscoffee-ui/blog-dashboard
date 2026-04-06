@@ -26,10 +26,11 @@ const data = await response.json();
 
 console.log("OpenAI raw:", data);
 
-// 🔥 ここが重要（両対応）
+// 🔥 正しい取り方
 const text =
+  data.output?.find(o => o.type === "message")
+    ?.content?.[0]?.text ||
   data.output_text ||
-  data.output?.[0]?.content?.[0]?.text ||
   "生成できませんでした";
 
 res.status(200).json({ text });
