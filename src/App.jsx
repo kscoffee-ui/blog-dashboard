@@ -25,8 +25,6 @@ function App() {
   const [openId, setOpenId] = useState(null);
 
   const [seoState, setSeoState] = useState({});
-  const [seoUrl, setSeoUrl] = useState("");
-  const [metaDesc, setMetaDesc] = useState("");
 
   const provider = new GoogleAuthProvider();
 
@@ -253,12 +251,6 @@ setTimeout(() => {
   });
 }, 100);
 
-      // ② スクロール
-      articleRefs.current[a.id]?.scrollIntoView({
-        behavior: "smooth",
-        block: "center"
-      });
-
       // ③ SEO state初期化（重要）
       setSeoState(prev => ({
         ...prev,
@@ -415,7 +407,82 @@ setTimeout(() => {
             placeholder="メタディスクリプション"
             className="w-full border px-2 py-1 rounded"
           />
+<div className="flex gap-2">
+  
+  {/* AIタイトル */}
+  <button
+    onClick={async (e) => {
+      e.stopPropagation();
 
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "title",
+            title: a.title,
+            keyword: a.keyword
+          })
+        });
+
+        const data = await res.json();
+
+        setSeoState(prev => ({
+          ...prev,
+          [a.id]: {
+            ...prev[a.id],
+            seoTitle: data.text
+          }
+        }));
+
+      } catch (err) {
+        alert("AI生成失敗");
+      }
+    }}
+    className="bg-purple-500 text-white px-3 py-1 rounded"
+  >
+    AIタイトル
+  </button>
+
+  {/* AI説明 */}
+  <button
+    onClick={async (e) => {
+      e.stopPropagation();
+
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            type: "desc",
+            title: a.title
+          })
+        });
+
+        const data = await res.json();
+
+        setSeoState(prev => ({
+          ...prev,
+          [a.id]: {
+            ...prev[a.id],
+            meta: data.text
+          }
+        }));
+
+      } catch (err) {
+        alert("AI生成失敗");
+      }
+    }}
+    className="bg-green-500 text-white px-3 py-1 rounded"
+  >
+    AI説明
+  </button>
+
+</div>
           <button
             onClick={async (e) => {
               e.stopPropagation();
