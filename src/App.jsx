@@ -447,49 +447,42 @@ setTimeout(() => {
     AIタイトル
   </button>
 
-  {/* AI説明 */}
-  <button
-    onClick={async (e) => {
-  e.stopPropagation();
+ {/* AI説明 */}
+<button
+  onClick={async (e) => {
+    e.stopPropagation();
 
-  console.log("①クリックされた");
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          type: "desc",   // ←修正
+          title: a.title
+        })
+      });
 
-  try {
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        type: "title",
-        title: a.title,
-        keyword: a.keyword
-      })
-    });
+      const data = await res.json();
 
-    console.log("②res:", res);
-    console.log("status:", res.status);
+      setSeoState(prev => ({
+        ...prev,
+        [a.id]: {
+          ...(prev[a.id] || {}),
+          meta: data.text   // ←修正
+        }
+      }));
 
-    const data = await res.json();
-    console.log("③data:", data);
-
-    setSeoState(prev => ({
-      ...prev,
-      [a.id]: {
-        ...(prev[a.id] || {}), // ←ここも修正
-        seoTitle: data.text
-      }
-    }));
-
-  } catch (err) {
-    console.error("④エラー:", err);
-    alert("AI生成失敗");
-  }
-}}
-    className="bg-green-500 text-white px-3 py-1 rounded"
-  >
-    AI説明
-  </button>
+    } catch (err) {
+      console.error("AIエラー:", err);
+      alert("AI生成失敗");
+    }
+  }}
+  className="bg-green-500 text-white px-3 py-1 rounded"
+>
+  AI説明
+</button>
 
 </div>
           <button
