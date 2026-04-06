@@ -1,30 +1,56 @@
-
-# blog-dashboard
-
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-2898a6c (初回コミット)
+# 記事改善ダッシュボード
 
 ## デモURL
 https://blog-dashboard-flame.vercel.app
 
-## 概要
-ブログ記事のパフォーマンスを分析し、改善点を可視化するダッシュボードアプリです。
+---
 
-## 工夫した点
-・直感的に理解できるUI設計  
-・Firebaseを用いたリアルタイムデータ管理  
+## 概要
+ブログ記事のパフォーマンス（PV・CTR・インプレッション）を可視化し、改善優先度を判断できるダッシュボードアプリです。  
+さらに、AIを活用してSEOタイトルやメタディスクリプションを自動生成し、その場で編集・保存できるように設計しています。
+
+---
+
+## 主な機能
+
+### 記事管理
+- 記事の追加 / 編集 / 削除（CRUD）
+- ステータス管理（未対策 / リライト中 / 完了）
+
+### データ可視化
+- ステータス別の円グラフ表示
+- 完了率の可視化
+- 改善優先記事ランキング
+
+### AI機能
+- SEOタイトル自動生成
+- メタディスクリプション生成
+- ワンクリックで改善案取得
+
+### UX設計
+- アコーディオンによる詳細編集
+- ローディング表示
+- トースト通知
+- スクロール連動
+
+---
+
+## 使用技術
+- React（Vite）
+- Firebase（Firestore / Authentication）
+- Recharts
+- OpenAI API
+- Vercel
+
+---
+
+## 工夫したポイント
+- インプレッションとCTRをもとに改善優先度を算出し、効率的なリライト判断ができるようにした  
+- AI生成結果をそのまま編集・保存できるようにし、実用性を意識した設計にした  
+- ユーザー体験を意識し、ローディング表示やトースト通知などを実装した  
+
+---
+
+## スクリーンショット
+<img width="1342" height="2063" alt="blog-dashboard-flame vercel app_" src="https://github.com/user-attachments/assets/45a1a468-b094-4ec9-8532-4f08641cccf2" />
+
