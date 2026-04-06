@@ -177,14 +177,25 @@ function App() {
     <div className="flex-1 p-8 bg-gray-100">
       <div className="max-w-5xl mx-auto space-y-6">
 
-        <div className="flex justify-between items-center">
-  <h1 className="text-2xl font-bold">記事改善ダッシュボード</h1>
-  <button
-    onClick={handleLogout}
-    className="bg-red-500 text-white px-4 py-2 rounded"
-  >
-    ログアウト
-  </button>
+        <div className="relative flex items-center mb-4">
+
+  {/* 中央タイトル */}
+  <h1 className="absolute left-1/2 -translate-x-1/2 
+  text-3xl font-bold tracking-wide">
+    記事改善ダッシュボード
+  </h1>
+
+  {/* 右上ボタン */}
+  <div className="ml-auto">
+    <button
+      onClick={handleLogout}
+      className="bg-red-500 text-white px-4 py-2 rounded 
+      hover:bg-red-600 transition"
+    >
+      ログアウト
+    </button>
+  </div>
+
 </div>
 
         {/* 入力 */}
