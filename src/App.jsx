@@ -253,7 +253,7 @@ function App() {
           ))}
         </div>
 
-        {/* 🔥 ランキング（順位表示） */}
+        {/* ランキング（順位表示） */}
         <div className="bg-white p-4 rounded-xl shadow">
           <h2 className="font-bold mb-2">改善優先記事</h2>
           {rankedArticles.map((a, index) => (
@@ -270,7 +270,7 @@ setTimeout(() => {
   });
 }, 100);
 
-      // ③ SEO state初期化（重要）
+      // ③ SEO state初期化
       setSeoState(prev => ({
         ...prev,
         [a.id]: {
@@ -297,7 +297,7 @@ setTimeout(() => {
           ))}
         </div>
 
-        {/* 🔥 グラフ修正 */}
+        {/* グラフ修正 */}
         <div className="bg-white p-6 rounded-xl shadow flex justify-center">
           <PieChart width={350} height={300}>
             <Pie
@@ -326,7 +326,7 @@ setTimeout(() => {
           </PieChart>
         </div>
 
-        {/* 一覧（そのまま） */}
+        {/* 一覧 */}
         <div className="space-y-3">
   {filteredArticles.map(a => (
     <div
@@ -384,11 +384,11 @@ transition duration-150">完</button>
         </div>
       </div>
 
-      {/* 🔽 アコーディオン */}
+      {/* アコーディオン */}
       {openId === a.id && (
         <div
           className="mt-4 p-3 bg-gray-50 rounded border space-y-2"
-          onClick={(e) => e.stopPropagation()} // ←これも重要
+          onClick={(e) => e.stopPropagation()} 
         >
 
           <input
@@ -442,7 +442,7 @@ transition duration-150">完</button>
   onClick={async (e) => {
     e.stopPropagation();
 
-    // 🔥 ローディングON
+    // ローディングON
     setLoadingMap(prev => ({ ...prev, [a.id]: true }));
 
     try {
@@ -472,12 +472,12 @@ transition duration-150">完</button>
       console.error("AIエラー:", err);
       alert("AI生成失敗");
     } finally {
-      // 🔥 ローディングOFF
+      // ローディングOFF
       setLoadingMap(prev => ({ ...prev, [a.id]: false }));
     }
   }}
 
-  // 🔥 無効化
+  // 無効化
   disabled={loadingMap[a.id]}
 
   className={`px-3 py-1 rounded text-white cursor-pointer

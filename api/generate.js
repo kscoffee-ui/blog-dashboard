@@ -45,7 +45,6 @@ const data = await response.json();
 
 console.log("OpenAI raw:", data);
 
-// 🔥 正しい取り方
 const text =
   data.output?.find(o => o.type === "message")
     ?.content?.[0]?.text ||
