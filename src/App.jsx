@@ -349,9 +349,18 @@ setTimeout(() => {
   </div>
 
         <div className="flex gap-2">
-          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"未対策")}} className="px-5 py-1 bg-red-400 rounded">未</button>
-          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"リライト中")}} className="px-5 py-1 bg-yellow-400 rounded">中</button>
-          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"完了")}} className="px-5 py-1 bg-green-400 rounded">完</button>
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"未対策")}} className="px-5 py-1 bg-red-400 rounded 
+hover:shadow-lg hover:scale-105 
+active:scale-95 
+transition duration-150">未</button>
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"リライト中")}} className="px-5 py-1 bg-yellow-400 rounded 
+hover:shadow-lg hover:scale-105 
+active:scale-95 
+transition duration-150">中</button>
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"完了")}} className="px-5 py-1 bg-green-400 rounded 
+hover:shadow-lg hover:scale-105 
+active:scale-95 
+transition duration-150">完</button>
  
         </div>
       </div>
@@ -452,9 +461,12 @@ setTimeout(() => {
   // 🔥 無効化
   disabled={loadingMap[a.id]}
 
-  className={`px-3 py-1 rounded text-white ${
-    loadingMap[a.id] ? "bg-gray-400" : "bg-purple-500"
-  }`}
+  className={`px-3 py-1 rounded text-white cursor-pointer
+transition duration-150
+${loadingMap[a.id]
+  ? "bg-gray-400"
+  : "bg-purple-500 hover:bg-purple-600 hover:shadow-lg hover:scale-105 active:scale-95"
+}`}
 >
   {loadingMap[a.id] ? "生成中..." : "AIタイトル"}
 </button>
@@ -498,9 +510,12 @@ setTimeout(() => {
 
   disabled={loadingMap[a.id]}
 
-  className={`px-3 py-1 rounded text-white ${
-    loadingMap[a.id] ? "bg-gray-400" : "bg-green-500"
-  }`}
+  className={`px-3 py-1 rounded text-white cursor-pointer
+transition duration-150
+${loadingMap[a.id]
+  ? "bg-gray-400"
+  : "bg-green-500 hover:bg-green-600 hover:shadow-lg hover:scale-105 active:scale-95"
+}`}
 >
   {loadingMap[a.id] ? "生成中..." : "AI説明"}
 </button>
@@ -520,7 +535,10 @@ setTimeout(() => {
 
               fetchArticles(user);
             }}
-            className="bg-blue-500 text-white px-3 py-1 rounded"
+            className="bg-blue-500 text-white px-3 py-1 rounded cursor-pointer
+hover:bg-blue-600 hover:shadow-lg hover:scale-105 
+active:scale-95 
+transition duration-150"
           >
             保存
           </button>
@@ -535,7 +553,10 @@ setTimeout(() => {
     setArticles(prev => prev.filter(item => item.id !== a.id));
     setOpenId(null); // ←閉じる
   }}
-  className="bg-red-500 text-white px-3 py-1 rounded"
+  className="bg-red-500 text-white px-3 py-1 rounded cursor-pointer
+hover:bg-red-600 hover:shadow-lg hover:scale-105 
+active:scale-95 
+transition duration-150"
 >
   削除
 </button>
