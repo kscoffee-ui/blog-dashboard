@@ -4,7 +4,7 @@ import {
   collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where
 } from "firebase/firestore";
 import {
-  signInWithPopup, GoogleAuthProvider, onAuthStateChanged
+  signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
 } from "firebase/auth";
 
 import { PieChart, Pie, Cell, Tooltip, Legend, Label } from "recharts";
@@ -22,6 +22,11 @@ function App() {
 
   const provider = new GoogleAuthProvider();
 
+  const handleLogout = async () => {
+  await signOut(auth);
+  setUser(null);
+  setArticles([]);
+};
   const generateDummy = () => ({
     pv: Math.floor(Math.random() * 200),
     impressions: Math.floor(Math.random() * 5000),
@@ -106,9 +111,9 @@ function App() {
   };
 
   const getSuggestion = (a) => {
-    if (a.impressions > 3000 && a.ctr < 1) return "🔥 タイトル改善推奨";
-    if (a.pv < 50) return "⚠️ リライト推奨";
-    return "✅ 良好";
+    if (a.impressions > 3000 && a.ctr < 1) return "タイトル改善推奨";
+    if (a.pv < 50) return "リライト推奨";
+    return "良好";
   };
 
   const rankedArticles = [...articles]
@@ -153,7 +158,15 @@ function App() {
     <div className="flex-1 p-8 bg-gray-100">
       <div className="max-w-5xl mx-auto space-y-6">
 
-        <h1 className="text-2xl font-bold">記事改善ダッシュボード</h1>
+        <div className="flex justify-between items-center">
+  <h1 className="text-2xl font-bold">記事改善ダッシュボード</h1>
+  <button
+    onClick={handleLogout}
+    className="bg-red-500 text-white px-4 py-2 rounded"
+  >
+    ログアウト
+  </button>
+</div>
 
         {/* 入力 */}
         <div className="bg-white p-4 rounded-xl shadow flex gap-2">
@@ -214,20 +227,19 @@ function App() {
         <div className="bg-white p-4 rounded-xl shadow">
           <h2 className="font-bold mb-2">改善優先記事</h2>
           {rankedArticles.map((a, index) => (
-            <div key={a.id} className="text-sm border-b py-2 flex justify-between">
-              <div className="flex gap-2 items-center">
-                <span className={`font-bold ${
-                  index === 0 ? "text-yellow-500" :
-                  index === 1 ? "text-gray-400" :
-                  index === 2 ? "text-orange-400" :
-                  "text-gray-500"
-                }`}>
-                  {index + 1}位
-                </span>
-                <span>{a.title}</span>
-              </div>
-              <span className="text-gray-400">{a.score}</span>
-            </div>
+            <div key={a.id} className="text-sm border-b py-2 flex justify-center">
+  <div className="flex gap-2 items-center">
+    <span className={`font-bold ${
+      index === 0 ? "text-yellow-500" :
+      index === 1 ? "text-gray-400" :
+      index === 2 ? "text-orange-400" :
+      "text-gray-500"
+    }`}>
+      {index + 1}位
+    </span>
+    <span className="text-center">{a.title}</span>
+  </div>
+</div>
           ))}
         </div>
 
