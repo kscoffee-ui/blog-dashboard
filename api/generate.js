@@ -22,14 +22,17 @@ export default async function handler(req, res) {
       })
     });
 
-    const data = await response.json();
+const data = await response.json();
 
-    console.log("OpenAI raw:", data); // ←追加（超重要）
+console.log("OpenAI raw:", data);
 
-    const text =
-      data.output?.[0]?.content?.[0]?.text || "生成できませんでした";
+// 🔥 ここが重要（両対応）
+const text =
+  data.output_text ||
+  data.output?.[0]?.content?.[0]?.text ||
+  "生成できませんでした";
 
-    res.status(200).json({ text });
+res.status(200).json({ text });
 
   } catch (e) {
     console.error("API ERROR:", e);
