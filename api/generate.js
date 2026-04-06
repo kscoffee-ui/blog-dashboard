@@ -4,10 +4,10 @@ export default async function handler(req, res) {
   const prompt =
     type === "title"
       ? `SEOに強くクリックされやすいタイトルを作って:
-      タイトル: ${title}
-      キーワード: ${keyword}`
+タイトル: ${title}
+キーワード: ${keyword}`
       : `SEOに強くクリックされやすいメタディスクリプションを120文字で作って:
-      タイトル: ${title}`;
+タイトル: ${title}`;
 
   try {
     const response = await fetch("https://api.openai.com/v1/responses", {
@@ -24,12 +24,15 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
-    res.status(200).json({
-      text: data.output[0].content[0].text
-    });
+    console.log("OpenAI raw:", data); // ←追加（超重要）
+
+    const text =
+      data.output?.[0]?.content?.[0]?.text || "生成できませんでした";
+
+    res.status(200).json({ text });
 
   } catch (e) {
+    console.error("API ERROR:", e);
     res.status(500).json({ error: "AI生成失敗" });
   }
 }
-
