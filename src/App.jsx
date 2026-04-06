@@ -9,16 +9,24 @@ import {
 
 import { PieChart, Pie, Cell, Tooltip, Legend, Label } from "recharts";
 
+import { useRef } from "react";
+
 function App() {
   const [articles, setArticles] = useState([]);
   const [title, setTitle] = useState("");
   const [keyword, setKeyword] = useState("");
   const [user, setUser] = useState(null);
   const [filterStatus, setFilterStatus] = useState("ALL");
-
+  const articleRefs = useRef({});
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editKeyword, setEditKeyword] = useState("");
+
+  const [openId, setOpenId] = useState(null);
+
+  const [seoState, setSeoState] = useState({});
+  const [seoUrl, setSeoUrl] = useState("");
+  const [metaDesc, setMetaDesc] = useState("");
 
   const provider = new GoogleAuthProvider();
 
@@ -153,7 +161,12 @@ function App() {
     { name: "リライト中", value: articles.filter(a => a.status === "リライト中").length },
     { name: "完了", value: done },
   ];
-
+  const getStatusColor = (status) => {
+  if (status === "未対策") return "bg-red-400";
+  if (status === "リライト中") return "bg-yellow-400";
+  if (status === "完了") return "bg-green-400";
+  return "bg-gray-300";
+};
   return (
     <div className="flex-1 p-8 bg-gray-100">
       <div className="max-w-5xl mx-auto space-y-6">
@@ -227,7 +240,37 @@ function App() {
         <div className="bg-white p-4 rounded-xl shadow">
           <h2 className="font-bold mb-2">改善優先記事</h2>
           {rankedArticles.map((a, index) => (
-            <div key={a.id} className="text-sm border-b py-2 flex justify-center">
+  <div
+    key={a.id}
+    onClick={() => {
+      // ① アコーディオン開く
+      setOpenId(a.id);
+
+setTimeout(() => {
+  articleRefs.current[a.id]?.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
+}, 100);
+
+      // ② スクロール
+      articleRefs.current[a.id]?.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+
+      // ③ SEO state初期化（重要）
+      setSeoState(prev => ({
+        ...prev,
+        [a.id]: {
+          seoTitle: a.seoTitle || "",
+          url: a.url || "",
+          meta: a.metaDescription || ""
+        }
+      }));
+    }}
+    className="text-sm border-b py-2 flex justify-center cursor-pointer hover:bg-gray-100"
+  >
   <div className="flex gap-2 items-center">
     <span className={`font-bold ${
       index === 0 ? "text-yellow-500" :
@@ -254,7 +297,7 @@ function App() {
               outerRadius={100}
               onClick={(data) => setFilterStatus(data.name)}
             >
-              <Cell fill="#9CA3AF" />
+              <Cell fill="#fd0707c9" />
               <Cell fill="#FACC15" />
               <Cell fill="#34D399" />
               <Label
@@ -274,47 +317,143 @@ function App() {
 
         {/* 一覧（そのまま） */}
         <div className="space-y-3">
-          {filteredArticles.map(a => (
-            <div key={a.id} className="bg-white p-4 rounded-xl shadow flex justify-between">
-              <div>
+  {filteredArticles.map(a => (
+    <div
+  key={a.id}
+  ref={(el) => (articleRefs.current[a.id] = el)}
+      onClick={() => {
+        setOpenId(openId === a.id ? null : a.id);
 
-                {editingId === a.id ? (
-                  <>
-                    <input value={editTitle} onChange={(e)=>setEditTitle(e.target.value)} className="border px-2 py-1 rounded mb-1" />
-                    <input value={editKeyword} onChange={(e)=>setEditKeyword(e.target.value)} className="border px-2 py-1 rounded mb-2" />
+        setSeoState(prev => ({
+          ...prev,
+          [a.id]: {
+            seoTitle: a.seoTitle || "",
+            url: a.url || "",
+            meta: a.metaDescription || ""
+          }
+        }));
+      }}
+      className="bg-white p-4 rounded-xl shadow cursor-pointer"
+    >
 
-                    <div className="flex gap-2">
-                      <button onClick={()=>saveEdit(a.id)} className="bg-green-500 text-white px-2 py-1 rounded">保存</button>
-                      <button onClick={()=>setEditingId(null)} className="bg-gray-300 px-2 py-1 rounded">キャンセル</button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="font-semibold">{a.title}</p>
-                    <p className="text-sm text-gray-500">{a.keyword}</p>
-                  </>
-                )}
+      {/* 上段 */}
+     <div className="flex justify-between">
+  <div>
 
-                <p className="text-xs text-gray-400">
-                  PV: {a.pv} / CTR: {a.ctr}% / Imp: {a.impressions}
-                </p>
+    <div className="flex items-center gap-2">
+      <div
+        className={`w-3 h-3 rounded-full ${getStatusColor(a.status)}`}
+      ></div>
 
-                <p className="text-xs text-red-500">
-                  {getSuggestion(a)}
-                </p>
-              </div>
+      <p className="font-semibold">{a.title}</p>
+    </div>
 
-              <div className="flex gap-2">
-                <button onClick={()=>changeStatus(a.id,"未対策")} className="px-2 py-1 bg-gray-200 rounded">未</button>
-                <button onClick={()=>changeStatus(a.id,"リライト中")} className="px-2 py-1 bg-yellow-200 rounded">中</button>
-                <button onClick={()=>changeStatus(a.id,"完了")} className="px-2 py-1 bg-green-200 rounded">完</button>
-                <button onClick={()=>startEdit(a)} className="text-blue-500">編集</button>
-                <button onClick={()=>deleteArticle(a.id)} className="text-red-500">削除</button>
-              </div>
+    <p className="text-sm text-gray-500">{a.keyword}</p>
 
-            </div>
-          ))}
+    <p className="text-xs text-gray-400">
+      PV: {a.pv} / CTR: {a.ctr}% / Imp: {a.impressions}
+    </p>
+
+  </div>
+
+        <div className="flex gap-2">
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"未対策")}} className="px-5 py-1 bg-red-400 rounded">未</button>
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"リライト中")}} className="px-5 py-1 bg-yellow-400 rounded">中</button>
+          <button onClick={(e)=>{e.stopPropagation(); changeStatus(a.id,"完了")}} className="px-5 py-1 bg-green-400 rounded">完</button>
+ 
         </div>
+      </div>
+
+      {/* 🔽 アコーディオン */}
+      {openId === a.id && (
+        <div
+          className="mt-4 p-3 bg-gray-50 rounded border space-y-2"
+          onClick={(e) => e.stopPropagation()} // ←これも重要
+        >
+
+          <input
+            value={seoState[a.id]?.seoTitle || ""}
+            onChange={(e)=>
+              setSeoState(prev => ({
+                ...prev,
+                [a.id]: {
+                  ...prev[a.id],
+                  seoTitle: e.target.value
+                }
+              }))
+            }
+            placeholder="SEOタイトル"
+            className="w-full border px-2 py-1 rounded"
+          />
+
+          <input
+            value={seoState[a.id]?.url || ""}
+            onChange={(e)=>
+              setSeoState(prev => ({
+                ...prev,
+                [a.id]: {
+                  ...prev[a.id],
+                  url: e.target.value
+                }
+              }))
+            }
+            placeholder="スラッグ（URL）"
+            className="w-full border px-2 py-1 rounded"
+          />
+
+          <textarea
+            value={seoState[a.id]?.meta || ""}
+            onChange={(e)=>
+              setSeoState(prev => ({
+                ...prev,
+                [a.id]: {
+                  ...prev[a.id],
+                  meta: e.target.value
+                }
+              }))
+            }
+            placeholder="メタディスクリプション"
+            className="w-full border px-2 py-1 rounded"
+          />
+
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
+
+              const data = seoState[a.id];
+
+              await updateDoc(doc(db, "articles", a.id), {
+                seoTitle: data.seoTitle,
+                url: data.url,
+                metaDescription: data.meta
+              });
+
+              fetchArticles(user);
+            }}
+            className="bg-blue-500 text-white px-3 py-1 rounded"
+          >
+            保存
+          </button>
+<button
+  onClick={async (e) => {
+    e.stopPropagation();
+
+    if (!confirm("本当に削除する？")) return;
+
+    await deleteDoc(doc(db, "articles", a.id));
+
+    setArticles(prev => prev.filter(item => item.id !== a.id));
+    setOpenId(null); // ←閉じる
+  }}
+  className="bg-red-500 text-white px-3 py-1 rounded"
+>
+  削除
+</button>
+        </div>
+      )}
+    </div>
+  ))}
+</div>
 
       </div>
     </div>
