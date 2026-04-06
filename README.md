@@ -18,3 +18,13 @@ The React Compiler is not enabled on this template because of its impact on dev 
 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 2898a6c (初回コミット)
+
+## デモURL
+https://blog-dashboard-flame.vercel.app
+
+## 概要
+ブログ記事のパフォーマンスを分析し、改善点を可視化するダッシュボードアプリです。
+
+## 工夫した点
+・直感的に理解できるUI設計  
+・Firebaseを用いたリアルタイムデータ管理  
