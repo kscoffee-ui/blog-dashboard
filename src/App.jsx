@@ -21,7 +21,7 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editKeyword, setEditKeyword] = useState("");
-
+  const [loadingMap, setLoadingMap] = useState({});
   const [openId, setOpenId] = useState(null);
 
   const [seoState, setSeoState] = useState({});
@@ -411,46 +411,11 @@ setTimeout(() => {
   
   {/* AIタイトル */}
   <button
-    onClick={async (e) => {
-      e.stopPropagation();
-
-      try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            type: "title",
-            title: a.title,
-            keyword: a.keyword
-          })
-        });
-
-        const data = await res.json();
-
-        setSeoState(prev => ({
-          ...prev,
-          [a.id]: {
-            ...prev[a.id],
-            seoTitle: data.text
-          }
-        }));
-
-      } catch (err) {
-  console.error("AIエラー:", err); // ←追加
-  alert("AI生成失敗");
-}
-    }}
-    className="bg-purple-500 text-white px-3 py-1 rounded"
-  >
-    AIタイトル
-  </button>
-
- {/* AI説明 */}
-<button
   onClick={async (e) => {
     e.stopPropagation();
+
+    // 🔥 ローディングON
+    setLoadingMap(prev => ({ ...prev, [a.id]: true }));
 
     try {
       const res = await fetch("/api/generate", {
@@ -459,7 +424,56 @@ setTimeout(() => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          type: "desc",   // ←修正
+          type: "title",
+          title: a.title,
+          keyword: a.keyword
+        })
+      });
+
+      const data = await res.json();
+
+      setSeoState(prev => ({
+        ...prev,
+        [a.id]: {
+          ...(prev[a.id] || {}),
+          seoTitle: data.text
+        }
+      }));
+
+    } catch (err) {
+      console.error("AIエラー:", err);
+      alert("AI生成失敗");
+    } finally {
+      // 🔥 ローディングOFF
+      setLoadingMap(prev => ({ ...prev, [a.id]: false }));
+    }
+  }}
+
+  // 🔥 無効化
+  disabled={loadingMap[a.id]}
+
+  className={`px-3 py-1 rounded text-white ${
+    loadingMap[a.id] ? "bg-gray-400" : "bg-purple-500"
+  }`}
+>
+  {loadingMap[a.id] ? "生成中..." : "AIタイトル"}
+</button>
+
+ {/* AI説明 */}
+<button
+  onClick={async (e) => {
+    e.stopPropagation();
+
+    setLoadingMap(prev => ({ ...prev, [a.id]: true }));
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          type: "desc",
           title: a.title
         })
       });
@@ -470,18 +484,25 @@ setTimeout(() => {
         ...prev,
         [a.id]: {
           ...(prev[a.id] || {}),
-          meta: data.text   // ←修正
+          meta: data.text
         }
       }));
 
     } catch (err) {
       console.error("AIエラー:", err);
       alert("AI生成失敗");
+    } finally {
+      setLoadingMap(prev => ({ ...prev, [a.id]: false }));
     }
   }}
-  className="bg-green-500 text-white px-3 py-1 rounded"
+
+  disabled={loadingMap[a.id]}
+
+  className={`px-3 py-1 rounded text-white ${
+    loadingMap[a.id] ? "bg-gray-400" : "bg-green-500"
+  }`}
 >
-  AI説明
+  {loadingMap[a.id] ? "生成中..." : "AI説明"}
 </button>
 
 </div>
